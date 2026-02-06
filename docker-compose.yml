@@ -3,25 +3,12 @@ services:
     build: .
     container_name: jeonghoo_tracker
     restart: unless-stopped
-    # 호스트 네트워크 사용 (MQTT 및 RTSP 통신 원활)
     network_mode: host
-#    devices:
-#      - /dev/dri:/dev/dri
-    # 여기서 설정을 변경하세요
-    environment:
-      - MQTT_BROKER_IP=192.168.0.87
-      - FRIGATE_CAMERA_NAME=livingroom
-      - TAPO_IP=192.168.0.60
-      - TAPO_USER=yhchoi
-      - TAPO_PASSWORD=dkvwlqXlvl3
-      - GO2RTC_STREAM_NAME=livingroom_sub
-      - USE_FRIGATE_TRIGGER=True
-      - TZ=Asia/Seoul
+    
+    # .env 파일에서 환경변수 로드
+    env_file:
+      - .env
     
     volumes:
-      # 코드를 수정하면 바로 반영되도록 연결
-#      - /etc/localtime:/etc/localtime:ro
-      - ./main.py:/app/main.py
-      - ./yolo26n_jeonghoo.pt:/app/yolo26n_jeonghoo.pt
       - ./debug:/app/debug
       - ./yolo26n_jeonghoo_openvino_model:/app/yolo26n_jeonghoo_openvino_model

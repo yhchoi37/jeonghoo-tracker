@@ -23,7 +23,7 @@ debug/
 
 # 환경 설정
 .env
-.env.*
+!.env.example
 
 # IDE
 .vscode/
