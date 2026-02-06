@@ -10,5 +10,7 @@ services:
       - .env
     
     volumes:
+      # 디버그 이미지 저장 폴더
       - ./debug:/app/debug
+      # 모델 파일 (빌드 시 복사 안 하고 마운트)
       - ./yolo26n_jeonghoo_openvino_model:/app/yolo26n_jeonghoo_openvino_model
