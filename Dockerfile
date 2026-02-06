@@ -19,15 +19,15 @@ RUN pip install --no-cache-dir torch torchvision --index-url https://download.py
 RUN pip install --no-cache-dir -r requirements.txt
 
 # 5. Python 소스 코드 복사
-COPY main.py .
-COPY config.py .
-COPY state.py .
-COPY handlers.py .
-COPY ptz_manager.py .
-COPY frame_reader.py .
-COPY frame_analyzer.py .
-COPY debug_utils.py .
-COPY utils.py .
+# COPY main.py .
+# COPY config.py .
+# COPY state.py .
+# COPY handlers.py .
+# COPY ptz_manager.py .
+# COPY frame_reader.py .
+# COPY frame_analyzer.py .
+# COPY debug_utils.py .
+# COPY utils.py .
 
 # 6. 실행
 CMD ["python", "-u", "main.py"]
