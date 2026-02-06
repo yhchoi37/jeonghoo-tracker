@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+*.egg
+
+# 모델 파일 (용량 큼, Git LFS 사용 권장)
+*.pt
+*_openvino_model/
+
+# 이전 버전 백업
+*.old
+*.old.*
+main.py.old*
+
+# 디버그 이미지
+debug/
+*.jpg
+*.png
+
+# 환경 설정
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker (선택적)
+# Dockerfile.old
+
+# OS
+.DS_Store
+Thumbs.db

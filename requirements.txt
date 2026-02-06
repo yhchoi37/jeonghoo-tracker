@@ -1,0 +1,6 @@
+ultralytics
+opencv-python-headless
+paho-mqtt
+onvif-zeep
+openvino>=2024.0.0
+scipy
