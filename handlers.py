@@ -74,8 +74,12 @@ class DetectionProcessor:
             # 한 번에 NumPy 변환 (최적화)
             xyxy = boxes.xyxy.cpu().numpy()
             confs = boxes.conf.cpu().numpy()
+            classes = boxes.cls.cpu().numpy()  # 클래스 ID
             
             for i in range(len(xyxy)):
+                # 클래스 1 (정후)만 추적
+                if int(classes[i]) != 1:
+                    continue
                 x1, y1, x2, y2 = xyxy[i]
                 conf = float(confs[i])
                 
