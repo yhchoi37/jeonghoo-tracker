@@ -54,7 +54,7 @@ class Config:
     DEBUG_DIR: str = field(default_factory=lambda: os.getenv('DEBUG_DIR', '/app/debug'))
     SAVE_DEBUG_IMAGES: bool = True
     DEBUG_SAVE_INTERVAL: float = 2.0  # 디버그 이미지 저장 간격
-    DEBUG_MAX_FILES: int = 100  # 최대 디버그 이미지 파일 수
+    DEBUG_MAX_FILES: int = 1000  # 최대 디버그 이미지 파일 수
     
     # --- PTZ 설정 ---
     PTZ_RECONNECT_DELAY: float = 3.0  # 연결 실패 시 재시도 대기
