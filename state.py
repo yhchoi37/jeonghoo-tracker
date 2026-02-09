@@ -63,6 +63,45 @@ class TrackerState:
         """타겟 놓침 (추적 중이었다가 사라짐)"""
         self.target_locked = False
         # was_tracking은 유지하여 "방금 놓침" 감지에 사용
+
+    # --- 추적 유예(Patience) 관련 ---
+    loss_count: int = 0  # 타겟 놓침 카운트
+    
+    # --- 오인식 방지 (Fallback) 정보 ---
+    fallback_start_time: float = 0.0  # 대체 추적 시작 시간
+    last_target_center: Optional[tuple[float, float]] = None  # 마지막 정후 위치 (정규화 좌표)
+
+    def increment_loss_count(self) -> int:
+        """놓침 카운트 증가 및 반환"""
+        self.loss_count += 1
+        return self.loss_count
+
+    def reset_loss_count(self) -> None:
+        """놓침 카운트 초기화"""
+        self.loss_count = 0
+
+    def is_loss_patience_exceeded(self, limit: int) -> bool:
+        """유예 횟수 초과 여부 확인"""
+        return self.loss_count >= limit
+
+    def start_fallback_timer(self) -> None:
+        """대체 추적 타이머 시작 (이미 돌고 있으면 유지)"""
+        if self.fallback_start_time == 0.0:
+            self.fallback_start_time = time.time()
+            
+    def reset_fallback_timer(self) -> None:
+        """대체 추적 타이머 초기화"""
+        self.fallback_start_time = 0.0
+        
+    def is_fallback_timeout(self, limit: float) -> bool:
+        """대체 추적 시간 초과 확인"""
+        if self.fallback_start_time == 0.0:
+            return False
+        return time.time() - self.fallback_start_time > limit
+        
+    def update_last_target_pos(self, center: tuple[float, float]) -> None:
+        """마지막 정후 위치 업데이트 (Fallback 거리 계산용)"""
+        self.last_target_center = center
     
     def next_preset(self, preset_count: int) -> int:
         """다음 프리셋 인덱스 반환 및 업데이트"""

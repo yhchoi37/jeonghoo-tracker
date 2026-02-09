@@ -43,8 +43,17 @@ class Config:
     # --- 추적 알고리즘 파라미터 ---
     PAN_DEAD_ZONE: float = 0.1  # 수평 중심 허용 오차
     TILT_DEAD_ZONE: float = 0.15  # 수직 중심 허용 오차
-    VELOCITY_MULTIPLIER: float = 2.8  # 속도 배율
+    
+    # PTZ 속도 제어 (Pan/Tilt 분리)
+    PAN_VELOCITY_MULTIPLIER: float = 3.0  # 수평 속도 배율 (기존 2.8 -> 3.0 상향)
+    TILT_VELOCITY_MULTIPLIER: float = 2.0  # 수직 속도 배율 (기존 2.8 -> 2.0 하향)
     VELOCITY_EXPONENT: float = 1.3  # 속도 지수 (가속도 곡선)
+    
+    # Fallback 안전장치
+    TRACKING_PATIENCE_COUNT: int = 10  # 타겟 놓침 유예 프레임 수 (약 1초)
+    FALLBACK_CLASSES: List[int] = field(default_factory=lambda: [0, 2])  # 대체 추적 클래스 (0:아빠, 2:엄마)
+    MAX_FALLBACK_DISTANCE: float = 0.3  # 대체 추적 허용 반경 (화면 너비 비율)
+    MAX_FALLBACK_DURATION: float = 5.0  # 대체 추적 최대 허용 시간 (초)
     
     # --- 타겟 선정 가중치 ---
     CONFIDENCE_WEIGHT: float = 0.6  # 신뢰도 가중치

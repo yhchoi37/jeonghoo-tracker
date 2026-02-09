@@ -270,9 +270,19 @@ class JeonghooTracker:
                 imgsz=config.MODEL_IMGSZ
             )
             
-            # 최적 타겟 선정
+            # 최적 타겟 선정 (1순위: 정후)
             h, w = frame.shape[:2]
-            detection = DetectionProcessor.find_best_target(results, w, h)
+            detection = DetectionProcessor.find_best_target(results, w, h, target_classes=[1])
+            
+            # Fallback 로직: 추적 중인데 정후가 안 보이면 가족(0, 2) 확인
+            if detection is None and (self.state.target_locked or self.state.was_tracking):
+                detection = DetectionProcessor.find_best_target(
+                    results, w, h, target_classes=config.FALLBACK_CLASSES
+                )
+                if detection is not None:
+                    # Fallback 성공 시 로그 (디버깅용)
+                    # log(f"⚠️ 정후 놓침 -> 대체 타겟(Class {detection.class_id}) 추적")
+                    pass
             
             # 상태별 처리
             self.router.route(frame, detection, self.state, self.ptz)
