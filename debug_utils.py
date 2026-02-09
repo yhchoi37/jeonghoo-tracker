@@ -138,7 +138,7 @@ class DebugImageManager:
         label = f"Jeonghoo {conf:.2f}"
         cv2.putText(
             frame, label, (x1, y1 - 10),
-            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2
+            cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 2
         )
     
     def _get_status_info(
@@ -173,10 +173,10 @@ class DebugImageManager:
         width: int
     ) -> None:
         """상단 상태바 그리기"""
-        cv2.rectangle(frame, (0, 0), (width, 40), bg_color, -1)
+        cv2.rectangle(frame, (int(width / 2), 0), (width, 20), bg_color, -1)
         cv2.putText(
-            frame, text, (10, 30),
-            cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2
+            frame, text, (int(width / 2) + 5, 15),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2
         )
     
     def _generate_filename(self) -> str:
