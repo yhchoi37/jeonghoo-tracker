@@ -142,7 +142,7 @@ async def immich_update_func(update):
 # ==============================
 if __name__ == '__main__':
     # [수정] 타임아웃 설정을 추가한 request 객체 생성
-    t_request = HTTPXRequest(connection_pool_size=8, connect_timeout=30.0, read_timeout=30.0)
+    t_request = HTTPXRequest(connection_pool_size=8, connect_timeout=60.0, read_timeout=60.0)
 
     # [수정] 빌더에 request 옵션 추가
     app = ApplicationBuilder().token(TOKEN).request(t_request).build()
