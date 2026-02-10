@@ -146,7 +146,6 @@ if __name__ == '__main__':
 
     # [수정] 빌더에 request 옵션 추가
     app = ApplicationBuilder().token(TOKEN).request(t_request).build()
-    app = ApplicationBuilder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("menu", show_menu))
     app.add_handler(CommandHandler("start", show_menu))
