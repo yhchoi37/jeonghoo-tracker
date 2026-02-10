@@ -3,6 +3,7 @@ import subprocess
 from dotenv import load_dotenv
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, CallbackQueryHandler
+from telegram.request import HTTPXRequest
 
 # --- 1. 환경 변수 로드 ---
 load_dotenv()
@@ -140,6 +141,11 @@ async def immich_update_func(update):
 # 메인 실행부
 # ==============================
 if __name__ == '__main__':
+    # [수정] 타임아웃 설정을 추가한 request 객체 생성
+    t_request = HTTPXRequest(connection_pool_size=8, connect_timeout=30.0, read_timeout=30.0)
+
+    # [수정] 빌더에 request 옵션 추가
+    app = ApplicationBuilder().token(TOKEN).request(t_request).build()
     app = ApplicationBuilder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("menu", show_menu))
