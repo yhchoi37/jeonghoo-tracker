@@ -129,6 +129,8 @@ class JeonghooTracker:
                     if not self.state.is_searching:
                         log("👂 소리 감지됨! -> 수색 모드 진입 (5분간)")
                     self.state.start_searching()
+                    if self.frame_reader and self.frame_reader.paused:
+                        self.frame_reader.resume()
                     
         except Exception as e:
             log(f"⚠️ MQTT 메시지 처리 오류: {e}")
@@ -207,6 +209,10 @@ class JeonghooTracker:
                 
                 self.state.mark_sleep_checked()
                 
+                # 프라이버시 확인 전엔 잠시 스트림을 켬
+                if self.frame_reader.paused:
+                    self.frame_reader.resume()
+
                 # 프레임 읽어서 정상 화면인지 확인
                 ret, frame = self.frame_reader.read()
                 if not ret or frame is None:
@@ -226,6 +232,9 @@ class JeonghooTracker:
                         duration = self.state.get_sleep_duration()
                         log(f"🌙 슬립 모드 유지 중... ({duration}초 경과)")
                         self.state.mark_status_logged()
+                    
+                    # 다시 바로 일시정지
+                    self.frame_reader.pause()
                 
                 continue
             
@@ -239,6 +248,10 @@ class JeonghooTracker:
             
             self.last_process_time = time.time()
             
+            # 대기 상태에서 빠져나왔다면(사람 감지/오디오 감지), 스트림 재개
+            if self.frame_reader.paused:
+                self.frame_reader.resume()
+
             # 프레임 읽기
             ret, frame = self.frame_reader.read()
             if not ret or frame is None:
@@ -254,11 +267,12 @@ class JeonghooTracker:
             
             # === 대기 모드 (사람 없음 + 수색 아님) ===
             if self.state.is_idle_mode(config.PERSON_TIMEOUT):
-                # 대기 모드에서는 YOLO 추론 스킵, 1초 대기
+                # 대기 모드에서는 스트림 수신 완전 중단으로 CPU 절약
                 if self.state.can_log_status(config.STATUS_LOG_INTERVAL):
-                    log("💤 대기 모드 (사람 없음, YOLO 추론 스킵)")
+                    log("💤 대기 모드 (사람 없음, RTSP 스트림 일시정지)")
                     self.state.mark_status_logged()
                 self.ptz.stop()
+                self.frame_reader.pause()
                 time.sleep(config.IDLE_CHECK_INTERVAL)
                 continue
             

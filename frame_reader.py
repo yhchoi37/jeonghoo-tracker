@@ -34,6 +34,9 @@ class LatestFrameReader:
         self.ret = False
         self.frame: Optional[np.ndarray] = None
         self.stopped = False
+        self.paused = False
+        self._pause_event = threading.Event()
+        self._pause_event.set()  # Initial state is playing
         self.thread: Optional[threading.Thread] = None
         
         self._connect()
@@ -71,6 +74,24 @@ class LatestFrameReader:
         max_failures = 30  # 30회 연속 실패 시 재연결
         
         while not self.stopped:
+            # Check if paused
+            if self.paused:
+                # Release resources to save memory/CPU if needed, or just block
+                if self.cap is not None:
+                    self.cap.release()
+                    self.cap = None
+                
+                # Block the thread until resumed or stopped
+                log("🛌 스트림 수신 일시정지 (CPU 절약)")
+                self._pause_event.wait()
+                
+                if self.stopped:
+                    break
+                    
+                log("⏰ 스트림 수신 재개 중...")
+                self._reconnect()
+                continue
+            
             if self.cap is None or not self.cap.isOpened():
                 time.sleep(0.1)
                 continue
@@ -124,13 +145,26 @@ class LatestFrameReader:
             (성공 여부, 프레임) 튜플
         """
         with self.lock:
-            if self.frame is not None:
+            if self.frame is not None and not self.paused:
                 return self.ret, self.frame.copy()
             return False, None
+    
+    def pause(self) -> None:
+        """프레임 읽기 일시정지 (CPU/네트워크 절약)"""
+        if not self.paused and not self.stopped:
+            self.paused = True
+            self._pause_event.clear()
+            
+    def resume(self) -> None:
+        """프레임 읽기 재개"""
+        if self.paused and not self.stopped:
+            self.paused = False
+            self._pause_event.set()
     
     def stop(self) -> None:
         """리더 정지 및 리소스 해제"""
         self.stopped = True
+        self._pause_event.set()  # 깨워서 루프 벗어나게 함
         
         # 스레드 종료 대기
         if self.thread is not None and self.thread.is_alive():
